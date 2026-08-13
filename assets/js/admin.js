@@ -1,5 +1,5 @@
-const SUPABASE_URL = "PASTE_PROJECT_URL";
-const SUPABASE_KEY = "PASTE_PUBLISHABLE_KEY";
+const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
+const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
 const supabase = window.supabase.createClient(
     SUPABASE_URL,
@@ -20,8 +20,14 @@ async function simpan() {
         ]);
 
     if (error) {
-        alert(error.message);
+        alert("Error: " + error.message);
     } else {
         alert("Komik berhasil ditambahkan!");
+
+        document.getElementById("judul").value = "";
+        document.getElementById("cover").value = "";
+        document.getElementById("genre").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("deskripsi").value = "";
     }
 }
