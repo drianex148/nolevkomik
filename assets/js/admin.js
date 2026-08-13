@@ -36,3 +36,7 @@ async function simpan(){
     document.getElementById("status").value="";
     document.getElementById("deskripsi").value="";
 }
+const btn = document.getElementById("btnTambah");
+if (btn) {
+    btn.addEventListener("click", simpan);
+}
