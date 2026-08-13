@@ -1,17 +1,27 @@
-function simpan() {
-    const komik = {
-        judul: document.getElementById("judul").value,
-        cover: document.getElementById("cover").value,
-        genre: document.getElementById("genre").value,
-        status: document.getElementById("status").value,
-        deskripsi: document.getElementById("deskripsi").value
-    };
+const SUPABASE_URL = "PASTE_PROJECT_URL";
+const SUPABASE_KEY = "PASTE_PUBLISHABLE_KEY";
 
-    let daftar = JSON.parse(localStorage.getItem("komik")) || [];
+const supabase = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
 
-    daftar.push(komik);
+async function simpan() {
+    const { error } = await supabase
+        .from("comics")
+        .insert([
+            {
+                title: document.getElementById("judul").value,
+                cover: document.getElementById("cover").value,
+                genre: document.getElementById("genre").value,
+                status: document.getElementById("status").value,
+                description: document.getElementById("deskripsi").value
+            }
+        ]);
 
-    localStorage.setItem("komik", JSON.stringify(daftar));
-
-    alert("Komik berhasil disimpan!");
+    if (error) {
+        alert(error.message);
+    } else {
+        alert("Komik berhasil ditambahkan!");
+    }
 }
