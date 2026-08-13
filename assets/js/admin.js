@@ -1,3 +1,4 @@
+alert("admin.js berhasil dimuat");
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
