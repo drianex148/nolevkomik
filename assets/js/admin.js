@@ -1,4 +1,3 @@
-
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
@@ -7,31 +6,31 @@ const supabase = window.supabase.createClient(
     SUPABASE_KEY
 );
 
-document.getElementById("btnTambah").addEventListener("click", simpan);
+document.getElementById("btnTambah").addEventListener("click", async () => {
+    try {
+        const dataKomik = {
+            title: document.getElementById("judul").value,
+            cover: document.getElementById("cover").value,
+            genre: document.getElementById("genre").value,
+            status: document.getElementById("status").value,
+            description: document.getElementById("deskripsi").value
+        };
 
-async function simpan(){
+        alert("Mengirim data...");
 
-    const { error } = await supabase
-    .from("comics")
-    .insert([{
-        title: document.getElementById("judul").value,
-        cover: document.getElementById("cover").value,
-        genre: document.getElementById("genre").value,
-        status: document.getElementById("status").value,
-        description: document.getElementById("deskripsi").value
-    }]);
+        const { data, error } = await supabase
+            .from("comics")
+            .insert([dataKomik])
+            .select();
 
-    if(error){
-        alert(error.message);
-        console.log(error);
-        return;
+        if (error) {
+            alert("ERROR:\n" + error.message);
+            return;
+        }
+
+        alert("BERHASIL!\nID: " + data[0].id);
+
+    } catch (e) {
+        alert("ERROR JAVASCRIPT:\n" + e.message);
     }
-
-    alert("Komik berhasil ditambahkan!");
-
-    document.getElementById("judul").value="";
-    document.getElementById("cover").value="";
-    document.getElementById("genre").value="";
-    document.getElementById("status").value="";
-    document.getElementById("deskripsi").value="";
-}
+});
