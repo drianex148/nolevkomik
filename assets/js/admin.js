@@ -1,4 +1,3 @@
-```javascript
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
@@ -35,4 +34,3 @@ async function simpan(){
     document.getElementById("status").value="";
     document.getElementById("deskripsi").value="";
 }
-```
