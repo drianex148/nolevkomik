@@ -1,15 +1,16 @@
+```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Admin NolevKomik</title>
 
 <style>
 body{
-    font-family:Arial;
+    font-family:Arial,sans-serif;
     background:#111;
-    color:white;
+    color:#fff;
     max-width:700px;
     margin:auto;
     padding:20px;
@@ -21,38 +22,37 @@ input,textarea{
     margin:10px 0;
     border:none;
     border-radius:8px;
+    box-sizing:border-box;
 }
 
 button{
     width:100%;
     padding:15px;
     background:#1e88e5;
-    color:white;
+    color:#fff;
     border:none;
     border-radius:8px;
     font-size:18px;
+    cursor:pointer;
 }
 </style>
-
 </head>
+
 <body>
 
 <h1>Admin NolevKomik</h1>
 
 <input id="judul" placeholder="Judul Komik">
-
 <input id="cover" placeholder="gambar/cover.jpg">
-
 <input id="genre" placeholder="Genre">
-
 <input id="status" placeholder="Status">
-
 <textarea id="deskripsi" placeholder="Deskripsi"></textarea>
 
-<button onclick="simpan()">Tambah Komik</button>
+<button id="btnTambah">Tambah Komik</button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>    
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="assets/js/admin.js"></script>
 
 </body>
 </html>
+```
