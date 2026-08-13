@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin NolevKomik</title>
+
+<style>
+body{
+    font-family:Arial;
+    background:#111;
+    color:white;
+    max-width:700px;
+    margin:auto;
+    padding:20px;
+}
+
+input,textarea{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border:none;
+    border-radius:8px;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    background:#1e88e5;
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:18px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>Admin NolevKomik</h1>
+
+<input id="judul" placeholder="Judul Komik">
+
+<input id="cover" placeholder="gambar/cover.jpg">
+
+<input id="genre" placeholder="Genre">
+
+<input id="status" placeholder="Status">
+
+<textarea id="deskripsi" placeholder="Deskripsi"></textarea>
+
+<button onclick="simpan()">Tambah Komik</button>
+
+<script src="assets/js/admin.js"></script>
+
+</body>
+</html>
