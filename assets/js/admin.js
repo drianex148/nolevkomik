@@ -1,13 +1,3 @@
-alert("admin.js berhasil dimuat");
-
-const btn = document.getElementById("btnTambah");
-
-alert(btn ? "Tombol ditemukan" : "Tombol TIDAK ditemukan");
-
-btn.addEventListener("click", function() {
-    alert("TOMBOL DIKLIK!");
-});
-
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
@@ -16,36 +6,50 @@ const db = window.supabase.createClient(
     SUPABASE_KEY
 );
 
-document.getElementById("btnTambah").addEventListener("click", async () => {
+const btn = document.getElementById("btnTambah");
+
+btn.addEventListener("click", simpan);
+
+async function simpan() {
+
+    btn.disabled = true;
+    btn.textContent = "Menyimpan...";
+
+    const komik = {
+        title: document.getElementById("judul").value.trim(),
+        cover: document.getElementById("cover").value.trim(),
+        genre: document.getElementById("genre").value.trim(),
+        status: document.getElementById("status").value.trim(),
+        description: document.getElementById("deskripsi").value.trim()
+    };
+
     try {
-        const dataKomik = {
-            title: document.getElementById("judul").value,
-            cover: document.getElementById("cover").value,
-            genre: document.getElementById("genre").value,
-            status: document.getElementById("status").value,
-            description: document.getElementById("deskripsi").value
-        };
 
-        alert("Mengirim data...");
-
-        const { data, error } = await db
+        const { error } = await db
             .from("comics")
-            .insert([dataKomik])
-            .select();
+            .insert([komik]);
 
         if (error) {
-    alert(
-      "Message: " + error.message +
-      "\nCode: " + error.code +
-      "\nDetails: " + error.details +
-      "\nHint: " + error.hint
-    );
-    return;
+            alert("Gagal menyimpan:\n" + error.message);
+            return;
         }
 
-        alert("BERHASIL!\nID: " + data[0].id);
+        alert("✅ Komik berhasil ditambahkan!");
 
-    } catch (e) {
-        alert("ERROR JAVASCRIPT:\n" + e.message);
+        document.getElementById("judul").value = "";
+        document.getElementById("cover").value = "";
+        document.getElementById("genre").value = "";
+        document.getElementById("status").value = "";
+        document.getElementById("deskripsi").value = "";
+
+    } catch (error) {
+
+        alert("Error:\n" + error.message);
+
+    } finally {
+
+        btn.disabled = false;
+        btn.textContent = "Tambah Komik";
+
     }
-});
+}
