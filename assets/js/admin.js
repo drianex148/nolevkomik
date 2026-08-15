@@ -7,7 +7,7 @@ alert(btn ? "Tombol ditemukan" : "Tombol TIDAK ditemukan");
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
 const SUPABASE_KEY = "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
-const supabase = window.supabase.createClient(
+const db = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
 );
@@ -24,7 +24,7 @@ document.getElementById("btnTambah").addEventListener("click", async () => {
 
         alert("Mengirim data...");
 
-        const { data, error } = await supabase
+        const { data, error } = await db
             .from("comics")
             .insert([dataKomik])
             .select();
