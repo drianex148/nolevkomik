@@ -1,7 +1,9 @@
 alert("admin.js berhasil dimuat");
 
 const btn = document.getElementById("btnTambah");
-
+btn.addEventListener("click", function() {
+    alert("TOMBOL DIKLIK!");
+});
 alert(btn ? "Tombol ditemukan" : "Tombol TIDAK ditemukan");
 
 const SUPABASE_URL = "https://ejomjasqzlzcwzevqwjs.supabase.co";
