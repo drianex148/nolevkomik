@@ -90,3 +90,105 @@ async function simpan() {
 
     }
         }
+
+
+async function loadChapterComics() {
+
+    const select = document.getElementById("chapterComic");
+
+    if (!select) return;
+
+    const { data, error } = await db
+        .from("comics")
+        .select("id, title")
+        .order("title");
+
+    if (error) {
+        alert("Gagal memuat daftar komik:\n" + error.message);
+        return;
+    }
+
+    select.innerHTML = '<option value="">Pilih Komik</option>';
+
+    data.forEach(komik => {
+
+        const option = document.createElement("option");
+
+        option.value = komik.id;
+        option.textContent = komik.title;
+
+        select.appendChild(option);
+
+    });
+}
+
+
+async function simpanChapter() {
+
+    const comicId =
+        document.getElementById("chapterComic").value;
+
+    const chapterNumber =
+        document.getElementById("chapterNumber").value;
+
+    const content =
+        document.getElementById("chapterContent").value.trim();
+
+    const btn =
+        document.getElementById("btnTambahChapter");
+
+
+    if (!comicId) {
+        alert("Pilih komik terlebih dahulu!");
+        return;
+    }
+
+    if (!chapterNumber) {
+        alert("Masukkan nomor chapter!");
+        return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = "Menyimpan...";
+
+
+    const { error } = await db
+        .from("chapters")
+        .insert([{
+            comic_id: comicId,
+            chapter_number: Number(chapterNumber),
+            content: content
+        }]);
+
+
+    if (error) {
+
+        alert("Gagal menyimpan chapter:\n" + error.message);
+
+    } else {
+
+        alert("✅ Chapter berhasil ditambahkan!");
+
+        document.getElementById("chapterNumber").value = "";
+        document.getElementById("chapterContent").value = "";
+
+    }
+
+
+    btn.disabled = false;
+    btn.textContent = "Tambah Chapter";
+
+}
+
+
+// Hubungkan tombol chapter
+const btnChapter =
+    document.getElementById("btnTambahChapter");
+
+if (btnChapter) {
+    btnChapter.addEventListener("click", simpanChapter);
+}
+
+
+// Isi pilihan komik
+loadChapterComics();
