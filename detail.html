@@ -43,9 +43,10 @@ header{
     background:#222;
     color:white;
     text-decoration:none;
-    padding:15px;
+    padding:18px;
     margin-top:10px;
     border-radius:8px;
+    font-size:20px;
 }
 
 .chapter:hover{
@@ -99,9 +100,13 @@ header{
 
             <h3>Daftar Chapter</h3>
 
-            <div id="chapterList" class="chapter-list">
-    <div class="loading">Memuat chapter...</div>
+            <div id="chapterList">
+                <div class="loading">
+                    Memuat chapter...
+                </div>
             </div>
+
+        </div>
 
     </div>
 
@@ -125,7 +130,7 @@ const db = window.supabase.createClient(
 );
 
 
-// Ambil ID dari URL
+// Ambil ID komik dari URL
 const params = new URLSearchParams(window.location.search);
 const comicId = params.get("id");
 
@@ -136,14 +141,18 @@ async function loadDetail(){
 
         document.getElementById("loading").style.display = "none";
 
-        const error = document.getElementById("error");
+        const errorBox = document.getElementById("error");
 
-        error.style.display = "block";
-        error.textContent = "ID komik tidak ditemukan.";
+        errorBox.style.display = "block";
+        errorBox.textContent = "ID komik tidak ditemukan.";
 
         return;
     }
 
+
+    // =========================
+    // AMBIL DATA KOMIK
+    // =========================
 
     const { data, error } = await db
         .from("comics")
@@ -181,7 +190,10 @@ async function loadDetail(){
     }
 
 
-    // Tampilkan data komik
+    // =========================
+    // TAMPILKAN DATA KOMIK
+    // =========================
+
     document.getElementById("title").textContent =
         data.title || "Tanpa Judul";
 
@@ -211,6 +223,57 @@ async function loadDetail(){
     }
 
 
+    // =========================
+    // AMBIL CHAPTER KOMIK INI
+    // =========================
+
+    const { data: chapters, error: chapterError } = await db
+        .from("chapters")
+        .select("id, chapter_number, content_text")
+        .eq("comic_id", comicId)
+        .order("chapter_number", { ascending: true });
+
+
+    const chapterList =
+        document.getElementById("chapterList");
+
+
+    if(chapterError){
+
+        console.error(chapterError);
+
+        chapterList.innerHTML =
+            "<p>Gagal memuat chapter.</p>";
+
+    }else if(!chapters || chapters.length === 0){
+
+        chapterList.innerHTML =
+            "<p>Belum ada chapter.</p>";
+
+    }else{
+
+        chapterList.innerHTML = "";
+
+        chapters.forEach(chapter => {
+
+            const link = document.createElement("a");
+
+            link.className = "chapter";
+
+            link.href =
+                "baca.html?id=" + chapter.id;
+
+            link.textContent =
+                "Chapter " + chapter.chapter_number;
+
+            chapterList.appendChild(link);
+
+        });
+
+    }
+
+
+    // Tampilkan halaman
     document.getElementById("loading").style.display =
         "none";
 
