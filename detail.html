@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Komik Pertamaku</title>
+<title>Detail Komik</title>
 
 <style>
 body{
@@ -30,6 +30,7 @@ header{
 
 .cover{
     width:220px;
+    max-width:100%;
     border-radius:10px;
 }
 
@@ -37,7 +38,7 @@ header{
     margin-top:15px;
 }
 
-a.chapter{
+.chapter{
     display:block;
     background:#222;
     color:white;
@@ -47,8 +48,20 @@ a.chapter{
     border-radius:8px;
 }
 
-a.chapter:hover{
+.chapter:hover{
     background:#333;
+}
+
+.loading{
+    text-align:center;
+    font-size:20px;
+    padding:40px 0;
+}
+
+.error{
+    background:#222;
+    padding:20px;
+    border-radius:10px;
 }
 </style>
 
@@ -60,33 +73,162 @@ a.chapter:hover{
 
 <div class="container">
 
-<img class="cover" src="gambar/onee-san-mode.jpg">
+    <div id="loading" class="loading">
+        Memuat komik...
+    </div>
 
-<div class="info">
+    <div id="content" style="display:none;">
 
-<h2>Komik Pertamaku</h2>
+        <img id="cover" class="cover" alt="Cover komik">
 
-<p><b>Status:</b> Ongoing</p>
+        <div class="info">
 
-<p><b>Genre:</b> Romance</p>
+            <h2 id="title"></h2>
 
-<p>
-Ini adalah halaman detail komik.
-Nanti deskripsi asli komik bisa ditaruh di sini.
-</p>
+            <p>
+                <b>Status:</b>
+                <span id="status"></span>
+            </p>
 
-<h3>Daftar Chapter</h3>
+            <p>
+                <b>Genre:</b>
+                <span id="genre"></span>
+            </p>
 
-<a class="chapter" href="chapter1.html">
-Chapter 1
-</a>
+            <p id="description"></p>
 
-<a class="chapter" href="chapter2.html">
-Chapter 2
-</a>    
+            <h3>Daftar Chapter</h3>
+
+            <a class="chapter" href="chapter1.html">
+                Chapter 1
+            </a>
+
+            <a class="chapter" href="chapter2.html">
+                Chapter 2
+            </a>
+
+        </div>
+
+    </div>
+
+    <div id="error" class="error" style="display:none;"></div>
+
 </div>
 
-</div>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+    "https://ejomjasqzlzcwzevqwjs.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
+
+const db = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+// Ambil ID dari URL
+const params = new URLSearchParams(window.location.search);
+const comicId = params.get("id");
+
+
+async function loadDetail(){
+
+    if(!comicId){
+
+        document.getElementById("loading").style.display = "none";
+
+        const error = document.getElementById("error");
+
+        error.style.display = "block";
+        error.textContent = "ID komik tidak ditemukan.";
+
+        return;
+    }
+
+
+    const { data, error } = await db
+        .from("comics")
+        .select("*")
+        .eq("id", comicId)
+        .single();
+
+
+    if(error){
+
+        console.error(error);
+
+        document.getElementById("loading").style.display = "none";
+
+        const errorBox = document.getElementById("error");
+
+        errorBox.style.display = "block";
+        errorBox.textContent =
+            "Gagal memuat komik: " + error.message;
+
+        return;
+    }
+
+
+    if(!data){
+
+        document.getElementById("loading").style.display = "none";
+
+        const errorBox = document.getElementById("error");
+
+        errorBox.style.display = "block";
+        errorBox.textContent = "Komik tidak ditemukan.";
+
+        return;
+    }
+
+
+    // Tampilkan data komik
+    document.getElementById("title").textContent =
+        data.title || "Tanpa Judul";
+
+    document.getElementById("status").textContent =
+        data.status || "-";
+
+    document.getElementById("genre").textContent =
+        data.genre || "-";
+
+    document.getElementById("description").textContent =
+        data.description || "Belum ada deskripsi.";
+
+
+    if(data.cover){
+
+        document.getElementById("cover").src =
+            data.cover;
+
+        document.getElementById("cover").alt =
+            data.title || "Cover komik";
+
+    }else{
+
+        document.getElementById("cover").style.display =
+            "none";
+
+    }
+
+
+    document.getElementById("loading").style.display =
+        "none";
+
+    document.getElementById("content").style.display =
+        "block";
+
+}
+
+
+loadDetail();
+
+</script>
 
 </body>
 </html>
