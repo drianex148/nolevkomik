@@ -24,8 +24,13 @@ document.getElementById("btnTambah").addEventListener("click", async () => {
             .select();
 
         if (error) {
-            alert("ERROR:\n" + error.message);
-            return;
+    alert(
+      "Message: " + error.message +
+      "\nCode: " + error.code +
+      "\nDetails: " + error.details +
+      "\nHint: " + error.hint
+    );
+    return;
         }
 
         alert("BERHASIL!\nID: " + data[0].id);
