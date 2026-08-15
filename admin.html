@@ -49,7 +49,30 @@ button{
 <textarea id="deskripsi" placeholder="Deskripsi"></textarea>
 
 <button id="btnTambah">Tambah Komik</button>
-    
+<hr>
+
+<h2>Tambah Chapter</h2>
+
+<select id="chapterComic">
+    <option value="">Pilih Komik</option>
+</select>
+
+<input
+    type="number"
+    id="chapterNumber"
+    placeholder="Nomor Chapter"
+    min="1"
+>
+
+<textarea
+    id="chapterContent"
+    placeholder="Isi chapter"
+></textarea>
+
+<button id="btnTambahChapter">
+    Tambah Chapter
+</button>    
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="assets/js/admin.js"></script>
 
