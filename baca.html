@@ -146,8 +146,8 @@ async function loadChapter(){
     const { data, error } = await db
         .from("chapters")
         .select(
-            "id, comic_id, chapter_number, content_text"
-        )
+    "id, comic_id, chapter_number, content"
+)
         .eq("id", id)
         .single();
 
@@ -173,8 +173,8 @@ async function loadChapter(){
 
 
     content.textContent =
-        data.content_text ||
-        "Belum ada isi chapter.";
+    data.content ||
+    "Belum ada isi chapter.";
 
 
     document.getElementById("back").href =
