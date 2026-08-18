@@ -157,7 +157,7 @@ async function simpanChapter() {
         .insert([{
     comic_id: comicId,
     chapter_number: Number(chapterNumber),
-    content_text: content
+    content: content
 }]);
 
 
