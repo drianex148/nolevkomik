@@ -155,10 +155,10 @@ async function simpanChapter() {
     const { error } = await db
         .from("chapters")
         .insert([{
-            comic_id: comicId,
-            chapter_number: Number(chapterNumber),
-            content: content
-        }]);
+    comic_id: comicId,
+    chapter_number: Number(chapterNumber),
+    content_text: content
+}]);
 
 
     if (error) {
