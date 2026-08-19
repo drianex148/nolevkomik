@@ -66,13 +66,18 @@ button{
 
 <input
     type="file"
-    id="chapterImages"
+    id="chapterImage"
     accept="image/*"
-    multiple
 >
 
-<p>
-    Pilih semua gambar halaman chapter sekaligus.
+<button type="button" id="btnTambahHalaman">
+    + Tambah Halaman
+</button>
+
+<div id="pageList"></div>
+
+<p id="pageCount">
+    Belum ada halaman.
 </p>
 
 <button id="btnTambahChapter">
