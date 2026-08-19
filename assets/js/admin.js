@@ -131,8 +131,8 @@ async function simpanChapter() {
     const chapterNumber =
         document.getElementById("chapterNumber").value;
 
-    const content =
-        document.getElementById("chapterContent").value.trim();
+    const files =
+        document.getElementById("chapterImages").files;
 
     const btn =
         document.getElementById("btnTambahChapter");
@@ -148,37 +148,101 @@ async function simpanChapter() {
         return;
     }
 
+    if (!files || files.length === 0) {
+        alert("Pilih gambar halaman chapter terlebih dahulu!");
+        return;
+    }
+
+
     btn.disabled = true;
-    btn.textContent = "Menyimpan...";
+    btn.textContent = "Mengupload...";
 
 
-    const { error } = await db
-        .from("chapters")
-        .insert([{
-    comic_id: comicId,
-    chapter_number: Number(chapterNumber),
-    content: content
-}]);
+    try {
+
+        const imageUrls = [];
 
 
-    if (error) {
+        // Upload semua gambar
+        for (let i = 0; i < files.length; i++) {
 
-        alert("Gagal menyimpan chapter:\n" + error.message);
+            const file = files[i];
 
-    } else {
+            const extension =
+                file.name.split(".").pop();
 
-        alert("✅ Chapter berhasil ditambahkan!");
+            const fileName =
+                `${comicId}/chapter-${chapterNumber}/${String(i + 1).padStart(3, "0")}.${extension}`;
+
+
+            const { error: uploadError } =
+                await db.storage
+                    .from("chapters")
+                    .upload(fileName, file, {
+                        upsert: true
+                    });
+
+
+            if (uploadError) {
+                throw uploadError;
+            }
+
+
+            const { data: publicData } =
+                db.storage
+                    .from("chapters")
+                    .getPublicUrl(fileName);
+
+
+            imageUrls.push(publicData.publicUrl);
+
+
+            btn.textContent =
+                `Mengupload ${i + 1}/${files.length}...`;
+        }
+
+
+        // Simpan data chapter
+        const { error: chapterError } =
+            await db
+                .from("chapters")
+                .insert([{
+                    comic_id: comicId,
+                    chapter_number: Number(chapterNumber),
+                    content: JSON.stringify(imageUrls)
+                }]);
+
+
+        if (chapterError) {
+            throw chapterError;
+        }
+
+
+        alert(
+            `✅ Chapter ${chapterNumber} berhasil ditambahkan!\n` +
+            `${files.length} halaman berhasil diupload.`
+        );
+
 
         document.getElementById("chapterNumber").value = "";
-        document.getElementById("chapterContent").value = "";
+        document.getElementById("chapterImages").value = "";
+
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "❌ Gagal menambahkan chapter:\n" +
+            error.message
+        );
 
     }
 
 
     btn.disabled = false;
     btn.textContent = "Tambah Chapter";
-
-}
+            }
 
 
 // Hubungkan tombol chapter
