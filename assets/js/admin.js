@@ -211,21 +211,234 @@ async function simpanChapter() {
                     chapter_number: Number(chapterNumber),
                     content: JSON.stringify(imageUrls)
                 }]);
+let chapterFiles = [];
+
+
+// ==============================
+// TAMBAH HALAMAN SATU PER SATU
+// ==============================
+
+const btnTambahHalaman =
+    document.getElementById("btnTambahHalaman");
+
+if (btnTambahHalaman) {
+
+    btnTambahHalaman.addEventListener("click", function () {
+
+        const input =
+            document.getElementById("chapterImage");
+
+        if (!input.files || input.files.length === 0) {
+
+            alert("Pilih gambar halaman dulu!");
+
+            return;
+        }
+
+
+        const file =
+            input.files[0];
+
+        chapterFiles.push(file);
+
+
+        input.value = "";
+
+
+        document.getElementById("pageCount").textContent =
+            chapterFiles.length +
+            " halaman sudah ditambahkan.";
+
+
+        const pageList =
+            document.getElementById("pageList");
+
+
+        const item =
+            document.createElement("div");
+
+        item.textContent =
+            chapterFiles.length +
+            ". " +
+            file.name;
+
+        item.style.padding = "8px 0";
+
+        pageList.appendChild(item);
+
+    });
+
+}
+
+
+// ==============================
+// SIMPAN CHAPTER
+// ==============================
+
+async function simpanChapter() {
+
+    const comicId =
+        document.getElementById("chapterComic").value;
+
+    const chapterNumber =
+        document.getElementById("chapterNumber").value;
+
+    const btn =
+        document.getElementById("btnTambahChapter");
+
+
+    if (!comicId) {
+
+        alert("Pilih komik terlebih dahulu!");
+
+        return;
+    }
+
+
+    if (!chapterNumber) {
+
+        alert("Masukkan nomor chapter!");
+
+        return;
+    }
+
+
+    if (chapterFiles.length === 0) {
+
+        alert("Tambahkan minimal satu halaman!");
+
+        return;
+    }
+
+
+    btn.disabled = true;
+
+    btn.textContent =
+        "Mengupload...";
+
+
+    try {
+
+        const imageUrls = [];
+
+
+        // ==============================
+        // UPLOAD SEMUA HALAMAN
+        // ==============================
+
+        for (
+            let i = 0;
+            i < chapterFiles.length;
+            i++
+        ) {
+
+            const file =
+                chapterFiles[i];
+
+
+            const extension =
+                file.name
+                    .split(".")
+                    .pop();
+
+
+            const fileName =
+                `${comicId}/chapter-${chapterNumber}/${String(i + 1).padStart(3, "0")}.${extension}`;
+
+
+            const { error: uploadError } =
+                await db.storage
+                    .from("chapters")
+                    .upload(
+                        fileName,
+                        file,
+                        {
+                            upsert: true
+                        }
+                    );
+
+
+            if (uploadError) {
+
+                throw uploadError;
+            }
+
+
+            const { data: publicData } =
+                db.storage
+                    .from("chapters")
+                    .getPublicUrl(
+                        fileName
+                    );
+
+
+            imageUrls.push(
+                publicData.publicUrl
+            );
+
+
+            btn.textContent =
+                "Mengupload " +
+                (i + 1) +
+                "/" +
+                chapterFiles.length +
+                "...";
+
+        }
+
+
+        // ==============================
+        // SIMPAN DATA CHAPTER
+        // ==============================
+
+        const { error: chapterError } =
+            await db
+                .from("chapters")
+                .insert([{
+
+                    comic_id:
+                        comicId,
+
+                    chapter_number:
+                        Number(chapterNumber),
+
+                    content:
+                        JSON.stringify(imageUrls)
+
+                }]);
 
 
         if (chapterError) {
+
             throw chapterError;
         }
 
 
         alert(
-            `✅ Chapter ${chapterNumber} berhasil ditambahkan!\n` +
-            `${files.length} halaman berhasil diupload.`
+            "✅ Chapter " +
+            chapterNumber +
+            " berhasil ditambahkan!\n\n" +
+            chapterFiles.length +
+            " halaman berhasil diupload."
         );
 
 
-        document.getElementById("chapterNumber").value = "";
-        document.getElementById("chapterImages").value = "";
+        // Bersihkan form
+
+        chapterFiles = [];
+
+        document.getElementById(
+            "chapterNumber"
+        ).value = "";
+
+        document.getElementById(
+            "pageList"
+        ).innerHTML = "";
+
+        document.getElementById(
+            "pageCount"
+        ).textContent =
+            "Belum ada halaman.";
 
 
     } catch (error) {
@@ -241,8 +454,10 @@ async function simpanChapter() {
 
 
     btn.disabled = false;
-    btn.textContent = "Tambah Chapter";
-            }
+
+    btn.textContent =
+        "Simpan Chapter";
+    }
 
 
 // Hubungkan tombol chapter
