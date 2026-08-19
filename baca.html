@@ -7,95 +7,82 @@
 <title>Baca Chapter</title>
 
 <style>
-body{
-    margin:0;
-    background:#111;
-    color:white;
-    font-family:Arial,sans-serif;
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
-header{
-    background:#1e88e5;
-    padding:15px;
-    text-align:center;
-    font-size:22px;
-    font-weight:bold;
-    position:sticky;
-    top:0;
+header {
+    background: #1e88e5;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
 }
 
-.container{
-    max-width:900px;
-    margin:auto;
-    padding:20px;
+#pages {
+    max-width: 900px;
+    margin: auto;
 }
 
-.content{
-    white-space:pre-wrap;
-    background:#222;
-    padding:20px;
-    border-radius:10px;
-    font-size:18px;
-    line-height:1.7;
+.page {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
-.loading{
-    text-align:center;
-    padding:40px 0;
-    font-size:20px;
+.loading {
+    text-align: center;
+    padding: 40px 20px;
+    font-size: 20px;
 }
 
-.error{
-    background:#222;
-    padding:20px;
-    border-radius:10px;
+.error {
+    margin: 20px;
+    padding: 20px;
+    background: #222;
+    border-radius: 10px;
 }
 
-.nav{
-    display:flex;
-    gap:10px;
-    margin-top:20px;
+.bottom {
+    padding: 25px;
+    text-align: center;
 }
 
-.nav a{
-    flex:1;
-    background:#1e88e5;
-    color:white;
-    padding:14px;
-    text-align:center;
-    text-decoration:none;
-    border-radius:8px;
+.bottom a {
+    display: inline-block;
+    padding: 12px 20px;
+    background: #1e88e5;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
 }
 </style>
-
 </head>
 
 <body>
 
-<header id="header">
+<header id="chapterTitle">
     Memuat chapter...
 </header>
 
-<div class="container">
+<div id="loading" class="loading">
+    Memuat halaman...
+</div>
 
-    <div id="loading" class="loading">
-        Memuat chapter...
-    </div>
+<div id="error" class="error" style="display:none;"></div>
 
-    <div id="error" class="error" style="display:none;"></div>
+<div id="pages"></div>
 
-    <div id="content" class="content" style="display:none;"></div>
-
-    <div class="nav">
-        <a id="back" href="index.html">
-            ⬅️ Kembali
-        </a>
-
-        <a href="index.html">
-            🏠 Beranda
-        </a>
-    </div>
-
+<div class="bottom">
+    <a id="backButton" href="index.html">
+        ⬅️ Kembali
+    </a>
 </div>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
@@ -114,11 +101,11 @@ const db = window.supabase.createClient(
 );
 
 
-const id =
+const chapterId =
     new URLSearchParams(window.location.search).get("id");
 
 
-async function loadChapter(){
+async function loadChapter() {
 
     const loading =
         document.getElementById("loading");
@@ -126,11 +113,11 @@ async function loadChapter(){
     const errorBox =
         document.getElementById("error");
 
-    const content =
-        document.getElementById("content");
+    const pages =
+        document.getElementById("pages");
 
 
-    if(!id){
+    if (!chapterId) {
 
         loading.style.display = "none";
 
@@ -145,14 +132,12 @@ async function loadChapter(){
 
     const { data, error } = await db
         .from("chapters")
-        .select(
-    "id, comic_id, chapter_number, content"
-)
-        .eq("id", id)
+        .select("id, comic_id, chapter_number, content")
+        .eq("id", chapterId)
         .single();
 
 
-    if(error){
+    if (error) {
 
         console.error(error);
 
@@ -168,22 +153,64 @@ async function loadChapter(){
     }
 
 
-    document.getElementById("header").textContent =
+    document.getElementById("chapterTitle").textContent =
         "Chapter " + data.chapter_number;
 
 
-    content.textContent =
-    data.content ||
-    "Belum ada isi chapter.";
-
-
-    document.getElementById("back").href =
+    document.getElementById("backButton").href =
         "detail.html?id=" + data.comic_id;
 
 
-    loading.style.display = "none";
+    let imageUrls = [];
 
-    content.style.display = "block";
+    try {
+
+        imageUrls = JSON.parse(data.content);
+
+    } catch (e) {
+
+        imageUrls = [];
+
+    }
+
+
+    if (!Array.isArray(imageUrls) || imageUrls.length === 0) {
+
+        loading.style.display = "none";
+
+        errorBox.style.display = "block";
+
+        errorBox.textContent =
+            "Chapter ini belum memiliki halaman gambar.";
+
+        return;
+    }
+
+
+    pages.innerHTML = "";
+
+
+    imageUrls.forEach((url, index) => {
+
+        const img =
+            document.createElement("img");
+
+        img.className = "page";
+
+        img.src = url;
+
+        img.alt =
+            "Chapter " +
+            data.chapter_number +
+            " - Halaman " +
+            (index + 1);
+
+        pages.appendChild(img);
+
+    });
+
+
+    loading.style.display = "none";
 }
 
 
@@ -192,4 +219,4 @@ loadChapter();
 </script>
 
 </body>
-  </html>
+</html>
