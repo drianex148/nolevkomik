@@ -903,3 +903,314 @@ if (btnHapusKomik) {
 
 
 loadDeleteComics();
+// ==============================
+// EDIT KOMIK
+// ==============================
+
+const editComicSelect =
+    document.getElementById("editComicSelect");
+
+const btnEditKomik =
+    document.getElementById("btnEditKomik");
+
+
+async function loadEditComics() {
+
+    if (!editComicSelect) return;
+
+    const { data, error } = await db
+        .from("comics")
+        .select("id, title, cover, genre, status, description")
+        .order("title");
+
+    if (error) {
+
+        alert(
+            "Gagal memuat komik:\n" +
+            error.message
+        );
+
+        return;
+    }
+
+    editComicSelect.innerHTML =
+        '<option value="">Pilih Komik</option>';
+
+    data.forEach(komik => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = komik.id;
+
+        option.textContent =
+            komik.title;
+
+        option.dataset.title =
+            komik.title || "";
+
+        option.dataset.cover =
+            komik.cover || "";
+
+        option.dataset.genre =
+            komik.genre || "";
+
+        option.dataset.status =
+            komik.status || "";
+
+        option.dataset.description =
+            komik.description || "";
+
+        editComicSelect.appendChild(option);
+
+    });
+}
+
+
+// Saat memilih komik
+if (editComicSelect) {
+
+    editComicSelect.addEventListener(
+        "change",
+        function () {
+
+            const option =
+                this.options[
+                    this.selectedIndex
+                ];
+
+            if (!this.value) {
+
+                document.getElementById(
+                    "editJudul"
+                ).value = "";
+
+                document.getElementById(
+                    "editGenre"
+                ).value = "";
+
+                document.getElementById(
+                    "editStatus"
+                ).value = "";
+
+                document.getElementById(
+                    "editDeskripsi"
+                ).value = "";
+
+                return;
+            }
+
+
+            document.getElementById(
+                "editJudul"
+            ).value =
+                option.dataset.title || "";
+
+
+            document.getElementById(
+                "editGenre"
+            ).value =
+                option.dataset.genre || "";
+
+
+            document.getElementById(
+                "editStatus"
+            ).value =
+                option.dataset.status || "";
+
+
+            document.getElementById(
+                "editDeskripsi"
+            ).value =
+                option.dataset.description || "";
+
+        }
+    );
+
+}
+
+
+// Simpan perubahan
+if (btnEditKomik) {
+
+    btnEditKomik.addEventListener(
+        "click",
+        async function () {
+
+            const comicId =
+                editComicSelect.value;
+
+
+            if (!comicId) {
+
+                alert(
+                    "Pilih komik terlebih dahulu!"
+                );
+
+                return;
+            }
+
+
+            const judul =
+                document.getElementById(
+                    "editJudul"
+                ).value.trim();
+
+
+            const genre =
+                document.getElementById(
+                    "editGenre"
+                ).value.trim();
+
+
+            const status =
+                document.getElementById(
+                    "editStatus"
+                ).value.trim();
+
+
+            const deskripsi =
+                document.getElementById(
+                    "editDeskripsi"
+                ).value.trim();
+
+
+            if (!judul) {
+
+                alert(
+                    "Judul komik tidak boleh kosong!"
+                );
+
+                return;
+            }
+
+
+            btnEditKomik.disabled = true;
+
+            btnEditKomik.textContent =
+                "Menyimpan...";
+
+
+            try {
+
+                const updateData = {
+
+                    title: judul,
+
+                    genre: genre,
+
+                    status: status,
+
+                    description: deskripsi
+
+                };
+
+
+                // Kalau memilih cover baru
+                const coverInput =
+                    document.getElementById(
+                        "editCover"
+                    );
+
+
+                if (
+                    coverInput.files &&
+                    coverInput.files.length > 0
+                ) {
+
+                    const file =
+                        coverInput.files[0];
+
+
+                    const namaFile =
+                        Date.now() +
+                        "_" +
+                        file.name.replace(
+                            /[^a-zA-Z0-9._-]/g,
+                            "_"
+                        );
+
+
+                    const { error: uploadError } =
+                        await db.storage
+                            .from("covers")
+                            .upload(
+                                namaFile,
+                                file
+                            );
+
+
+                    if (uploadError) {
+
+                        throw uploadError;
+                    }
+
+
+                    const { data: publicUrlData } =
+                        db.storage
+                            .from("covers")
+                            .getPublicUrl(
+                                namaFile
+                            );
+
+
+                    updateData.cover =
+                        publicUrlData.publicUrl;
+
+                }
+
+
+                const { error } =
+                    await db
+                        .from("comics")
+                        .update(updateData)
+                        .eq("id", comicId);
+
+
+                if (error) {
+
+                    throw error;
+                }
+
+
+                alert(
+                    "✅ Komik berhasil diperbarui!"
+                );
+
+
+                coverInput.value = "";
+
+
+                loadEditComics();
+
+
+                // Refresh dropdown tambah/hapus
+                loadChapterComics();
+
+                loadDeleteComics();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "❌ Gagal mengedit komik:\n" +
+                    error.message
+                );
+
+            }
+
+
+            btnEditKomik.disabled = false;
+
+            btnEditKomik.textContent =
+                "💾 Simpan Perubahan";
+
+        }
+    );
+
+}
+
+
+loadEditComics();
