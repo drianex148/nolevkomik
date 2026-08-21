@@ -651,3 +651,255 @@ if (btnHapusChapter) {
 
 // Isi daftar komik untuk fitur hapus
 loadDeleteChapterComics();
+// ==============================
+// HAPUS KOMIK
+// ==============================
+
+const deleteComicSelect =
+    document.getElementById("deleteComicSelect");
+
+const btnHapusKomik =
+    document.getElementById("btnHapusKomik");
+
+
+async function loadDeleteComics() {
+
+    if (!deleteComicSelect) return;
+
+    const { data, error } = await db
+        .from("comics")
+        .select("id, title, cover")
+        .order("title");
+
+    if (error) {
+
+        alert(
+            "Gagal memuat daftar komik:\n" +
+            error.message
+        );
+
+        return;
+    }
+
+    deleteComicSelect.innerHTML =
+        '<option value="">Pilih Komik</option>';
+
+    data.forEach(komik => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = komik.id;
+
+        option.textContent =
+            komik.title;
+
+        option.dataset.cover =
+            komik.cover || "";
+
+        deleteComicSelect.appendChild(
+            option
+        );
+
+    });
+}
+
+
+if (btnHapusKomik) {
+
+    btnHapusKomik.addEventListener(
+        "click",
+        async function () {
+
+            const comicId =
+                deleteComicSelect.value;
+
+            if (!comicId) {
+
+                alert(
+                    "Pilih komik yang mau dihapus!"
+                );
+
+                return;
+            }
+
+
+            const option =
+                deleteComicSelect.options[
+                    deleteComicSelect.selectedIndex
+                ];
+
+            const comicTitle =
+                option.textContent;
+
+
+            const yakin =
+                confirm(
+                    "Yakin ingin menghapus komik:\n\n" +
+                    comicTitle +
+                    "\n\n" +
+                    "Semua chapter dan gambar chapter-nya juga akan dihapus."
+                );
+
+
+            if (!yakin) return;
+
+
+            btnHapusKomik.disabled = true;
+
+            btnHapusKomik.textContent =
+                "Menghapus...";
+
+
+            try {
+
+                // 1. Ambil semua chapter
+                const { data: chapters, error: chapterError } =
+                    await db
+                        .from("chapters")
+                        .select(
+                            "id, chapter_number"
+                        )
+                        .eq("comic_id", comicId);
+
+
+                if (chapterError) {
+                    throw chapterError;
+                }
+
+
+                // 2. Hapus gambar setiap chapter
+                for (const chapter of chapters || []) {
+
+                    const folder =
+                        `${comicId}/chapter-${chapter.chapter_number}`;
+
+
+                    const { data: files, error: listError } =
+                        await db.storage
+                            .from("chapters")
+                            .list(folder);
+
+
+                    if (listError) {
+                        throw listError;
+                    }
+
+
+                    if (files && files.length > 0) {
+
+                        const paths =
+                            files.map(file =>
+                                `${folder}/${file.name}`
+                            );
+
+
+                        const { error: removeError } =
+                            await db.storage
+                                .from("chapters")
+                                .remove(paths);
+
+
+                        if (removeError) {
+                            throw removeError;
+                        }
+
+                    }
+
+                }
+
+
+                // 3. Hapus semua data chapter
+                const { error: deleteChaptersError } =
+                    await db
+                        .from("chapters")
+                        .delete()
+                        .eq("comic_id", comicId);
+
+
+                if (deleteChaptersError) {
+                    throw deleteChaptersError;
+                }
+
+
+                // 4. Hapus data komik
+                const { error: deleteComicError } =
+                    await db
+                        .from("comics")
+                        .delete()
+                        .eq("id", comicId);
+
+
+                if (deleteComicError) {
+                    throw deleteComicError;
+                }
+
+
+                // 5. Hapus cover jika berasal dari bucket covers
+                const coverUrl =
+                    option.dataset.cover;
+
+
+                if (coverUrl) {
+
+                    const marker =
+                        "/storage/v1/object/public/covers/";
+
+                    const index =
+                        coverUrl.indexOf(marker);
+
+
+                    if (index !== -1) {
+
+                        const filePath =
+                            decodeURIComponent(
+                                coverUrl.substring(
+                                    index + marker.length
+                                )
+                            );
+
+
+                        await db.storage
+                            .from("covers")
+                            .remove([
+                                filePath
+                            ]);
+                    }
+
+                }
+
+
+                alert(
+                    "✅ Komik \"" +
+                    comicTitle +
+                    "\" berhasil dihapus!"
+                );
+
+
+                loadDeleteComics();
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "❌ Gagal menghapus komik:\n" +
+                    error.message
+                );
+
+            }
+
+
+            btnHapusKomik.disabled = false;
+
+            btnHapusKomik.textContent =
+                "🗑️ Hapus Komik";
+
+        }
+    );
+
+}
+
+
+loadDeleteComics();
