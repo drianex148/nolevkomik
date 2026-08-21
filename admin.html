@@ -118,6 +118,49 @@ button{
 >
     🗑️ Hapus Komik
     </button>
+<hr>
+
+<h2>Edit Komik</h2>
+
+<select id="editComicSelect">
+    <option value="">Pilih Komik</option>
+</select>
+
+<input
+    type="text"
+    id="editJudul"
+    placeholder="Judul komik"
+>
+
+<input
+    type="file"
+    id="editCover"
+    accept="image/*"
+>
+
+<input
+    type="text"
+    id="editGenre"
+    placeholder="Genre"
+>
+
+<input
+    type="text"
+    id="editStatus"
+    placeholder="Status"
+>
+
+<textarea
+    id="editDeskripsi"
+    placeholder="Deskripsi"
+></textarea>
+
+<button
+    type="button"
+    id="btnEditKomik"
+>
+    💾 Simpan Perubahan
+</button>
 
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script src="assets/js/admin.js"></script>
