@@ -383,3 +383,271 @@ if (btnChapter) {
 
 // Isi pilihan komik
 loadChapterComics();
+// ==============================
+// KELOLA / HAPUS CHAPTER
+// ==============================
+
+const deleteChapterComic =
+    document.getElementById("deleteChapterComic");
+
+const deleteChapterSelect =
+    document.getElementById("deleteChapterSelect");
+
+
+// Isi daftar komik untuk hapus chapter
+async function loadDeleteChapterComics() {
+
+    if (!deleteChapterComic) return;
+
+    const { data, error } = await db
+        .from("comics")
+        .select("id, title")
+        .order("title");
+
+    if (error) {
+        alert(
+            "Gagal memuat daftar komik:\n" +
+            error.message
+        );
+        return;
+    }
+
+    deleteChapterComic.innerHTML =
+        '<option value="">Pilih Komik</option>';
+
+    data.forEach(komik => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = komik.id;
+        option.textContent = komik.title;
+
+        deleteChapterComic.appendChild(option);
+
+    });
+}
+
+
+// Saat komik dipilih, tampilkan chapternya
+if (deleteChapterComic) {
+
+    deleteChapterComic.addEventListener(
+        "change",
+        async function () {
+
+            const comicId =
+                this.value;
+
+            deleteChapterSelect.innerHTML =
+                '<option value="">Memuat chapter...</option>';
+
+            if (!comicId) {
+
+                deleteChapterSelect.innerHTML =
+                    '<option value="">Pilih Chapter</option>';
+
+                return;
+            }
+
+
+            const { data, error } = await db
+                .from("chapters")
+                .select("id, chapter_number")
+                .eq("comic_id", comicId)
+                .order("chapter_number", {
+                    ascending: true
+                });
+
+
+            if (error) {
+
+                alert(
+                    "Gagal memuat chapter:\n" +
+                    error.message
+                );
+
+                return;
+            }
+
+
+            deleteChapterSelect.innerHTML =
+                '<option value="">Pilih Chapter</option>';
+
+
+            data.forEach(chapter => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    chapter.id;
+
+                option.textContent =
+                    "Chapter " +
+                    chapter.chapter_number;
+
+                deleteChapterSelect.appendChild(
+                    option
+                );
+
+            });
+
+        }
+    );
+
+}
+
+
+// Hapus chapter
+const btnHapusChapter =
+    document.getElementById("btnHapusChapter");
+
+
+if (btnHapusChapter) {
+
+    btnHapusChapter.addEventListener(
+        "click",
+        async function () {
+
+            const chapterId =
+                deleteChapterSelect.value;
+
+
+            if (!chapterId) {
+
+                alert(
+                    "Pilih chapter yang mau dihapus!"
+                );
+
+                return;
+            }
+
+
+            const yakin =
+                confirm(
+                    "Yakin ingin menghapus chapter ini?\n\n" +
+                    "Data chapter DAN semua gambar halamannya akan dihapus."
+                );
+
+
+            if (!yakin) return;
+
+
+            btnHapusChapter.disabled = true;
+
+            btnHapusChapter.textContent =
+                "Menghapus...";
+
+
+            try {
+
+                // Ambil data chapter
+                const { data: chapter, error: chapterError } =
+                    await db
+                        .from("chapters")
+                        .select(
+                            "id, comic_id, chapter_number"
+                        )
+                        .eq("id", chapterId)
+                        .single();
+
+
+                if (chapterError) {
+
+                    throw chapterError;
+                }
+
+
+                const folder =
+                    `${chapter.comic_id}/chapter-${chapter.chapter_number}`;
+
+
+                // Cari semua gambar di folder chapter
+                const { data: files, error: listError } =
+                    await db.storage
+                        .from("chapters")
+                        .list(folder);
+
+
+                if (listError) {
+
+                    throw listError;
+                }
+
+
+                // Hapus semua gambar
+                if (files && files.length > 0) {
+
+                    const filePaths =
+                        files.map(file =>
+                            `${folder}/${file.name}`
+                        );
+
+
+                    const { error: removeError } =
+                        await db.storage
+                            .from("chapters")
+                            .remove(filePaths);
+
+
+                    if (removeError) {
+
+                        throw removeError;
+                    }
+
+                }
+
+
+                // Hapus data chapter dari database
+                const { error: deleteError } =
+                    await db
+                        .from("chapters")
+                        .delete()
+                        .eq("id", chapterId);
+
+
+                if (deleteError) {
+
+                    throw deleteError;
+                }
+
+
+                alert(
+                    "✅ Chapter " +
+                    chapter.chapter_number +
+                    " berhasil dihapus!"
+                );
+
+
+                // Refresh daftar chapter
+                deleteChapterComic.dispatchEvent(
+                    new Event("change")
+                );
+
+
+            } catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "❌ Gagal menghapus chapter:\n" +
+                    error.message
+                );
+
+            }
+
+
+            btnHapusChapter.disabled = false;
+
+            btnHapusChapter.textContent =
+                "🗑️ Hapus Chapter";
+
+        }
+    );
+
+}
+
+
+// Isi daftar komik untuk fitur hapus
+loadDeleteChapterComics();
