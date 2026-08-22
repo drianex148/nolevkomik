@@ -144,9 +144,86 @@ function tampilkanKomik(daftar) {
 // SEARCH KOMIK
 // ==============================
 
-function cariKomik() {
+function isiFilter() {
 
-    const input =
+    const genreSelect =
+        document.getElementById("filterGenre");
+
+    const statusSelect =
+        document.getElementById("filterStatus");
+
+    if (!genreSelect || !statusSelect) return;
+
+
+    const genres = new Set();
+    const statuses = new Set();
+
+
+    semuaKomik.forEach(komik => {
+
+        if (komik.genre) {
+
+            komik.genre
+                .split(",")
+                .map(g => g.trim())
+                .filter(Boolean)
+                .forEach(g => genres.add(g));
+
+        }
+
+
+        if (komik.status) {
+
+            statuses.add(
+                komik.status.trim()
+            );
+
+        }
+
+    });
+
+
+    genreSelect.innerHTML =
+        '<option value="">Semua Genre</option>';
+
+    [...genres]
+        .sort()
+        .forEach(genre => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = genre;
+            option.textContent = genre;
+
+            genreSelect.appendChild(option);
+
+        });
+
+
+    statusSelect.innerHTML =
+        '<option value="">Semua Status</option>';
+
+    [...statuses]
+        .sort()
+        .forEach(status => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = status;
+            option.textContent = status;
+
+            statusSelect.appendChild(option);
+
+        });
+
+}
+
+
+function filterKomik() {
+
+    const search =
         document
             .getElementById("search")
             .value
@@ -154,12 +231,16 @@ function cariKomik() {
             .toLowerCase();
 
 
-    if (!input) {
+    const genre =
+        document
+            .getElementById("filterGenre")
+            .value;
 
-        tampilkanKomik(semuaKomik);
 
-        return;
-    }
+    const status =
+        document
+            .getElementById("filterStatus")
+            .value;
 
 
     const hasil =
@@ -169,7 +250,31 @@ function cariKomik() {
                 (komik.title || "")
                     .toLowerCase();
 
-            return judul.includes(input);
+
+            const cocokJudul =
+                !search ||
+                judul.includes(search);
+
+
+            const cocokGenre =
+                !genre ||
+                (komik.genre || "")
+                    .split(",")
+                    .map(g => g.trim())
+                    .includes(genre);
+
+
+            const cocokStatus =
+                !status ||
+                (komik.status || "")
+                    .trim() === status;
+
+
+            return (
+                cocokJudul &&
+                cocokGenre &&
+                cocokStatus
+            );
 
         });
 
@@ -177,5 +282,46 @@ function cariKomik() {
     tampilkanKomik(hasil);
 }
 
+
+// Search
+const searchInput =
+    document.getElementById("search");
+
+if (searchInput) {
+
+    searchInput.addEventListener(
+        "input",
+        filterKomik
+    );
+
+}
+
+
+// Filter genre
+const filterGenre =
+    document.getElementById("filterGenre");
+
+if (filterGenre) {
+
+    filterGenre.addEventListener(
+        "change",
+        filterKomik
+    );
+
+}
+
+
+// Filter status
+const filterStatus =
+    document.getElementById("filterStatus");
+
+if (filterStatus) {
+
+    filterStatus.addEventListener(
+        "change",
+        filterKomik
+    );
+
+    }
 
 loadKomik();
