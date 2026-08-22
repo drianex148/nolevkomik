@@ -6,49 +6,176 @@ const db = window.supabase.createClient(
     SUPABASE_KEY
 );
 
+let semuaKomik = [];
+
+
+// ==============================
+// LOAD KOMIK
+// ==============================
+
 async function loadKomik() {
 
-    const grid = document.getElementById("grid");
+    const grid =
+        document.getElementById("grid");
 
-    if (!grid) {
-        console.log("Elemen grid tidak ditemukan");
-        return;
-    }
+    if (!grid) return;
 
-    grid.innerHTML = "<p>Memuat komik...</p>";
+    grid.innerHTML =
+        "<p>Memuat komik...</p>";
+
 
     const { data, error } = await db
         .from("comics")
         .select("*")
-        .order("id", { ascending: false });
+        .order("id", {
+            ascending: false
+        });
+
 
     if (error) {
-        grid.innerHTML = "<p>Gagal memuat komik.</p>";
+
         console.error(error);
+
+        grid.innerHTML =
+            "<p>Gagal memuat komik.</p>";
+
         return;
     }
 
-    if (!data || data.length === 0) {
-        grid.innerHTML = "<p>Belum ada komik.</p>";
+
+    semuaKomik = data || [];
+
+    tampilkanKomik(semuaKomik);
+}
+
+
+// ==============================
+// TAMPILKAN KOMIK
+// ==============================
+
+function tampilkanKomik(daftar) {
+
+    const grid =
+        document.getElementById("grid");
+
+    if (!grid) return;
+
+
+    if (!daftar || daftar.length === 0) {
+
+        grid.innerHTML =
+            "<p>Komik tidak ditemukan.</p>";
+
         return;
     }
+
 
     grid.innerHTML = "";
 
-    data.forEach(komik => {
 
-        grid.innerHTML += `
-            <a href="detail.html?id=${komik.id}" class="comic-link">
-                <div class="card">
-                    <img src="${komik.cover}" alt="${komik.title}">
-                    <h3>${komik.title}</h3>
-                    <p>${komik.genre || ""}</p>
-                    <small>${komik.status || ""}</small>
-                </div>
-            </a>
-        `;
+    daftar.forEach(komik => {
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            "detail.html?id=" +
+            encodeURIComponent(komik.id);
+
+        link.className =
+            "comic-link";
+
+
+        const card =
+            document.createElement("div");
+
+        card.className =
+            "card";
+
+        card.dataset.title =
+            (komik.title || "").toLowerCase();
+
+
+        const img =
+            document.createElement("img");
+
+        img.src =
+            komik.cover || "";
+
+        img.alt =
+            komik.title || "Cover komik";
+
+
+        const title =
+            document.createElement("h3");
+
+        title.textContent =
+            komik.title || "Tanpa Judul";
+
+
+        const genre =
+            document.createElement("p");
+
+        genre.textContent =
+            komik.genre || "";
+
+
+        const status =
+            document.createElement("small");
+
+        status.textContent =
+            komik.status || "";
+
+
+        card.appendChild(img);
+        card.appendChild(title);
+        card.appendChild(genre);
+        card.appendChild(status);
+
+        link.appendChild(card);
+
+        grid.appendChild(link);
 
     });
 }
+
+
+// ==============================
+// SEARCH KOMIK
+// ==============================
+
+function cariKomik() {
+
+    const input =
+        document
+            .getElementById("search")
+            .value
+            .trim()
+            .toLowerCase();
+
+
+    if (!input) {
+
+        tampilkanKomik(semuaKomik);
+
+        return;
+    }
+
+
+    const hasil =
+        semuaKomik.filter(komik => {
+
+            const judul =
+                (komik.title || "")
+                    .toLowerCase();
+
+            return judul.includes(input);
+
+        });
+
+
+    tampilkanKomik(hasil);
+}
+
 
 loadKomik();
