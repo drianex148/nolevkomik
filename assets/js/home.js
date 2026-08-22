@@ -45,7 +45,10 @@ async function loadKomik() {
 
     semuaKomik = data || [];
 
-    tampilkanKomik(semuaKomik);
+isiFilter();
+
+tampilkanKomik(semuaKomik);
+    
 }
 
 
