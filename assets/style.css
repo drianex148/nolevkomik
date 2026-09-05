@@ -16,12 +16,13 @@ body {
 ========================= */
 
 header {
-    background: #1e88e5;
+    background: #0f172a;
     padding: 22px 15px;
     text-align: center;
+    font-family: 'Space Grotesk', sans-serif;
     font-size: 27px;
-    font-weight: bold;
-    letter-spacing: 1px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 
