@@ -1,130 +1,251 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Detail Komik</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+
 <style>
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Plus Jakarta Sans', sans-serif;
 }
 
 body {
-    background: #0b1120;
-    color: #fff;
+    background: #080d1a;
+    color: #f8fafc;
+
+    font-family: 'Plus Jakarta Sans', sans-serif;
+
     min-height: 100vh;
 }
 
-/* HEADER */
+
+/* =========================
+   HEADER
+========================= */
+
 header {
     background: #0f172a;
-    padding: 16px 20px;
+
     border-bottom: 1px solid #1e293b;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    padding: 16px;
+
+    text-align: center;
 
     font-family: 'Space Grotesk', sans-serif;
-    font-size: 22px;
+
+    font-size: 21px;
+
     font-weight: 700;
-    letter-spacing: .5px;
+
+    letter-spacing: .4px;
 }
 
-/* CONTAINER */
+
+/* =========================
+   CONTAINER
+========================= */
+
 .container {
-    max-width: 900px;
+    width: 100%;
+
+    max-width: 800px;
+
     margin: auto;
-    padding: 25px 20px;
+
+    padding: 25px 16px 45px;
 }
 
-/* COVER */
-.cover {
-    width: 220px;
-    max-width: 100%;
 
+/* =========================
+   COVER
+========================= */
+
+.cover {
     display: block;
-    margin: 0 auto 22px;
+
+    width: 210px;
+
+    max-width: 75%;
+
+    margin: 0 auto 24px;
 
     border-radius: 14px;
 
     border: 1px solid #263247;
 
     box-shadow:
-        0 15px 35px rgba(0,0,0,.35);
+        0 18px 40px rgba(0,0,0,.4);
 }
 
-/* INFO */
+
+/* =========================
+   INFO
+========================= */
+
 .info {
-    margin-top: 10px;
+    text-align: center;
 }
 
 .info h2 {
     font-family: 'Space Grotesk', sans-serif;
+
     font-size: 28px;
-    margin-bottom: 15px;
-}
 
-.info p {
-    color: #94a3b8;
-    line-height: 1.7;
-    margin-bottom: 8px;
-}
+    line-height: 1.25;
 
-.info p b {
-    color: #fff;
-}
-
-#description {
-    margin-top: 18px;
-    padding: 15px;
-
-    background: #111827;
-    border: 1px solid #1e293b;
-
-    border-radius: 12px;
-
-    color: #cbd5e1;
-}
-
-/* CHAPTER TITLE */
-.info h3 {
-    font-family: 'Space Grotesk', sans-serif;
-    font-size: 20px;
-
-    margin-top: 28px;
     margin-bottom: 12px;
 }
 
-/* CHAPTER */
-.chapter {
-    display: block;
+
+/* =========================
+   META
+========================= */
+
+.meta {
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    flex-wrap: wrap;
+
+    gap: 7px;
+
+    margin-bottom: 20px;
+}
+
+.meta span {
+    display: inline-block;
+
+    padding: 6px 10px;
 
     background: #111827;
-    color: #fff;
+
+    border: 1px solid #263247;
+
+    border-radius: 7px;
+
+    color: #cbd5e1;
+
+    font-size: 11px;
+
+    font-weight: 600;
+}
+
+.meta .status {
+    color: #c4b5fd;
+
+    background: rgba(124,58,237,.13);
+
+    border-color: rgba(139,92,246,.25);
+}
+
+
+/* =========================
+   DESCRIPTION
+========================= */
+
+#description {
+    padding: 16px;
+
+    background: #111827;
+
+    border: 1px solid #1e293b;
+
+    border-radius: 13px;
+
+    color: #cbd5e1;
+
+    font-size: 13px;
+
+    line-height: 1.7;
+
+    text-align: left;
+
+    margin-bottom: 30px;
+}
+
+
+/* =========================
+   CHAPTER TITLE
+========================= */
+
+.info h3 {
+    font-family: 'Space Grotesk', sans-serif;
+
+    font-size: 20px;
+
+    text-align: left;
+
+    margin-bottom: 12px;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #1e293b;
+}
+
+
+/* =========================
+   CHAPTER
+========================= */
+
+#chapterList {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.chapter {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    position: relative;
+
+    background: #111827;
+
+    color: #f8fafc;
 
     text-decoration: none;
 
-    padding: 14px 16px;
-    margin-top: 9px;
+    padding: 14px 15px;
 
     border-radius: 10px;
 
     border: 1px solid #1e293b;
 
-    font-size: 15px;
+    font-size: 13px;
+
     font-weight: 600;
 
-    transition:
-        .2s ease;
+    transition: .2s ease;
+}
+
+.chapter::after {
+    content: "›";
+
+    color: #64748b;
+
+    font-size: 20px;
+
+    line-height: 1;
 }
 
 .chapter:hover {
@@ -139,49 +260,84 @@ header {
     transform: translateX(3px);
 }
 
-/* LOADING */
+.chapter:hover::after {
+    color: white;
+}
+
+
+/* =========================
+   LOADING
+========================= */
+
 .loading {
     text-align: center;
 
-    font-size: 15px;
+    padding: 50px 10px;
 
     color: #94a3b8;
 
-    padding: 50px 0;
+    font-size: 14px;
 }
 
-/* ERROR */
+
+/* =========================
+   ERROR
+========================= */
+
 .error {
     background: #111827;
 
-    border: 1px solid #3b4558;
+    border: 1px solid #334155;
 
     padding: 18px;
 
     border-radius: 12px;
 
     color: #cbd5e1;
+
+    text-align: center;
+
+    font-size: 13px;
 }
 
-/* MOBILE */
+
+/* =========================
+   MOBILE
+========================= */
+
 @media (max-width: 600px) {
 
     header {
         padding: 14px 12px;
+
         font-size: 19px;
     }
 
     .container {
-        padding: 20px 14px;
+        padding:
+            20px
+            13px
+            35px;
     }
 
     .cover {
-        width: 190px;
+        width: 185px;
+
         margin-bottom: 20px;
     }
 
     .info h2 {
         font-size: 23px;
+    }
+
+    .meta {
+        margin-bottom: 17px;
+    }
+
+    #description {
+        font-size: 12px;
+
+        padding: 14px;
     }
 
     .info h3 {
@@ -190,16 +346,23 @@ header {
 
     .chapter {
         padding: 13px 14px;
-        font-size: 14px;
+
+        font-size: 13px;
     }
+
 }
+
 </style>
 
 </head>
 
+
 <body>
 
-<header>NOLEVKOMIK</header>
+<header>
+    NOLEVKOMIK
+</header>
+
 
 <div class="container">
 
@@ -207,43 +370,66 @@ header {
         Memuat komik...
     </div>
 
+
     <div id="content" style="display:none;">
 
-        <img id="cover" class="cover" alt="Cover komik">
+        <img
+            id="cover"
+            class="cover"
+            alt="Cover komik"
+        >
+
 
         <div class="info">
 
             <h2 id="title"></h2>
 
-            <p>
-                <b>Status:</b>
-                <span id="status"></span>
-            </p>
 
-            <p>
-                <b>Genre:</b>
-                <span id="genre"></span>
-            </p>
+            <div class="meta">
+
+                <span class="status">
+                    <span id="status"></span>
+                </span>
+
+                <span>
+                    <span id="genre"></span>
+                </span>
+
+            </div>
+
 
             <p id="description"></p>
 
-            <h3>Daftar Chapter</h3>
+
+            <h3>
+                Daftar Chapter
+            </h3>
+
 
             <div id="chapterList">
+
                 <div class="loading">
                     Memuat chapter...
                 </div>
+
             </div>
 
         </div>
 
     </div>
 
-    <div id="error" class="error" style="display:none;"></div>
+
+    <div
+        id="error"
+        class="error"
+        style="display:none;"
+    ></div>
 
 </div>
 
+
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
 
 <script>
 
@@ -253,161 +439,233 @@ const SUPABASE_URL =
 const SUPABASE_KEY =
     "sb_publishable_Sg46KKG4LgPAginx9MLJkQ_ht3fw0Ua";
 
-const db = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-// Ambil ID komik dari URL
-const params = new URLSearchParams(window.location.search);
-const comicId = params.get("id");
+const params =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const comicId =
+    params.get("id");
 
 
-async function loadDetail(){
+async function loadDetail() {
 
-    if(!comicId){
+    if (!comicId) {
 
-        document.getElementById("loading").style.display = "none";
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
 
-        const errorBox = document.getElementById("error");
+        const errorBox =
+            document.getElementById("error");
 
         errorBox.style.display = "block";
-        errorBox.textContent = "ID komik tidak ditemukan.";
+
+        errorBox.textContent =
+            "ID komik tidak ditemukan.";
 
         return;
     }
 
 
-    // =========================
-    // AMBIL DATA KOMIK
-    // =========================
+    /* =========================
+       DATA KOMIK
+    ========================= */
 
-    const { data, error } = await db
-        .from("comics")
-        .select("*")
-        .eq("id", comicId)
-        .single();
+    const { data, error } =
+        await db
+            .from("comics")
+            .select("*")
+            .eq("id", comicId)
+            .single();
 
 
-    if(error){
+    if (error) {
 
         console.error(error);
 
-        document.getElementById("loading").style.display = "none";
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
 
-        const errorBox = document.getElementById("error");
+        const errorBox =
+            document.getElementById("error");
 
         errorBox.style.display = "block";
+
         errorBox.textContent =
-            "Gagal memuat komik: " + error.message;
+            "Gagal memuat komik: " +
+            error.message;
 
         return;
     }
 
 
-    if(!data){
+    if (!data) {
 
-        document.getElementById("loading").style.display = "none";
+        document.getElementById(
+            "loading"
+        ).style.display = "none";
 
-        const errorBox = document.getElementById("error");
+        const errorBox =
+            document.getElementById("error");
 
         errorBox.style.display = "block";
-        errorBox.textContent = "Komik tidak ditemukan.";
+
+        errorBox.textContent =
+            "Komik tidak ditemukan.";
 
         return;
     }
 
 
-    // =========================
-    // TAMPILKAN DATA KOMIK
-    // =========================
+    /* =========================
+       TAMPILKAN DATA
+    ========================= */
 
-    document.getElementById("title").textContent =
+    document.getElementById(
+        "title"
+    ).textContent =
         data.title || "Tanpa Judul";
 
-    document.getElementById("status").textContent =
+
+    document.getElementById(
+        "status"
+    ).textContent =
         data.status || "-";
 
-    document.getElementById("genre").textContent =
+
+    document.getElementById(
+        "genre"
+    ).textContent =
         data.genre || "-";
 
-    document.getElementById("description").textContent =
-        data.description || "Belum ada deskripsi.";
+
+    document.getElementById(
+        "description"
+    ).textContent =
+        data.description ||
+        "Belum ada deskripsi.";
 
 
-    if(data.cover){
+    if (data.cover) {
 
-        document.getElementById("cover").src =
-            data.cover;
+        document.getElementById(
+            "cover"
+        ).src = data.cover;
 
-        document.getElementById("cover").alt =
+        document.getElementById(
+            "cover"
+        ).alt =
             data.title || "Cover komik";
 
-    }else{
+    } else {
 
-        document.getElementById("cover").style.display =
-            "none";
+        document.getElementById(
+            "cover"
+        ).style.display = "none";
 
     }
 
 
-    // =========================
-    // AMBIL CHAPTER KOMIK INI
-    // =========================
+    /* =========================
+       DATA CHAPTER
+    ========================= */
 
-    const { data: chapters, error: chapterError } = await db
+    const {
+        data: chapters,
+        error: chapterError
+    } = await db
         .from("chapters")
-        .select("id, chapter_number")
-        .eq("comic_id", comicId)
-        .order("chapter_number", { ascending: true });
+        .select(
+            "id, chapter_number"
+        )
+        .eq(
+            "comic_id",
+            comicId
+        )
+        .order(
+            "chapter_number",
+            {
+                ascending: true
+            }
+        );
 
 
     const chapterList =
-        document.getElementById("chapterList");
+        document.getElementById(
+            "chapterList"
+        );
 
 
-    if(chapterError){
+    if (chapterError) {
 
-        console.error(chapterError);
+        console.error(
+            chapterError
+        );
 
         chapterList.innerHTML =
-    "<p>Gagal memuat chapter: " + chapterError.message + "</p>";
+            "<p>Gagal memuat chapter: " +
+            chapterError.message +
+            "</p>";
 
-    }else if(!chapters || chapters.length === 0){
+    } else if (
+        !chapters ||
+        chapters.length === 0
+    ) {
 
         chapterList.innerHTML =
             "<p>Belum ada chapter.</p>";
 
-    }else{
+    } else {
 
         chapterList.innerHTML = "";
 
-        chapters.forEach(chapter => {
 
-            const link = document.createElement("a");
+        chapters.forEach(
+            chapter => {
 
-            link.className = "chapter";
+                const link =
+                    document.createElement(
+                        "a"
+                    );
 
-            link.href =
-                "baca.html?id=" + chapter.id;
+                link.className =
+                    "chapter";
 
-            link.textContent =
-                "Chapter " + chapter.chapter_number;
+                link.href =
+                    "baca.html?id=" +
+                    chapter.id;
 
-            chapterList.appendChild(link);
+                link.textContent =
+                    "Chapter " +
+                    chapter.chapter_number;
 
-        });
+                chapterList.appendChild(
+                    link
+                );
+
+            }
+        );
 
     }
 
 
-    // Tampilkan halaman
-    document.getElementById("loading").style.display =
-        "none";
+    document.getElementById(
+        "loading"
+    ).style.display = "none";
 
-    document.getElementById("content").style.display =
-        "block";
+
+    document.getElementById(
+        "content"
+    ).style.display = "block";
 
 }
 
@@ -417,4 +675,4 @@ loadDetail();
 </script>
 
 </body>
-</html>
+    </html>
